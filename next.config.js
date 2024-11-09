@@ -4,9 +4,9 @@ const nextConfig = {
     domains: ['lh3.googleusercontent.com', 'maps.googleapis.com'],
   },
   typescript: {
-    ignoreBuildErrors: true, // For development only
-  },
-  pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
+    // This is temporary to get the build working, remove for production
+    ignoreBuildErrors: true,
+  }
 }
 
 module.exports = nextConfig 

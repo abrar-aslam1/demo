@@ -1,5 +1,7 @@
 import axios from 'axios'
-import { Vendor, Location, DataForSEOResponse, DataForSEOItem } from '@/types'
+import { Vendor, Location } from '@/types'
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 
 export async function searchVendors(
   keyword: string,
@@ -7,17 +9,19 @@ export async function searchVendors(
   options: { limit?: number; offset?: number } = {}
 ): Promise<{ vendors: Vendor[]; total: number }> {
   try {
-    const response = await axios.get<{ items: DataForSEOItem[] }>('/api/vendors/search', {
+    const response = await axios.get(`${SITE_URL}/api/vendors/search`, {
       params: {
-        keyword,
-        location: `${location.city}, ${location.state_name}`
+        q: keyword,
+        location: `${location.city}, ${location.state_name}`,
+        limit: options.limit,
+        offset: options.offset
       }
     })
 
     const items = response.data.items || []
     
-    const vendors: Vendor[] = items.map((item: DataForSEOItem) => ({
-      id: item.place_id,
+    const vendors: Vendor[] = items.map((item: any) => ({
+      id: item.place_id || String(Math.random()),
       name: item.title,
       category: keyword,
       location,
@@ -48,7 +52,7 @@ export async function getVendorDetails(
   location: Location
 ): Promise<Vendor | null> {
   try {
-    const response = await axios.get<{ items: DataForSEOItem[] }>(`/api/vendors/${vendorId}`)
+    const response = await axios.get(`${SITE_URL}/api/vendors/${vendorId}`)
     const item = response.data.items[0]
     
     if (!item) {
